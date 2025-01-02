@@ -1,22 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
+import MaskedInput from "react-maskedinput";
+import { findDOMNode } from "react-dom";
+import ReactDOM from "react-dom/client";
 
 function UserList() {
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [filters, setFilters] = useState({
     name: "",
     cpf: "",
     neighborhood: "",
-    date: "",
     start_date: "",
     end_date: "",
   });
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     const token = "lHONlaWxhAX1Am1SL21xoRcGJbmqma8a217VDBIod7914d4d";
     let url = `http://127.0.0.1:8000/api/users-addresses-filter?page=${page}`;
 
-    const queryParams = new URLSearchParams(filters);
+    const queryParams = new URLSearchParams({
+      name: filters.name,
+      cpf: filters.cpf,
+      neighborhood: filters.neighborhood,
+      start_date: filters.start_date,
+      end_date: filters.end_date,
+    });
+
     if (queryParams.toString()) {
       url += `&${queryParams.toString()}`;
     }
@@ -33,19 +43,19 @@ function UserList() {
       const data = await response.json();
 
       if (data.status) {
-        console.log("leo", data);
         setUsers(data.users.data);
+        setTotalPages(data.users.last_page || 1);
       } else {
         console.error("Erro ao buscar dados");
       }
     } catch (error) {
       console.error("Erro ao fazer requisição:", error);
     }
-  };
+  }, [filters, page]);
 
   useEffect(() => {
     fetchData();
-  }, [page, filters]);
+  }, [page, filters, fetchData]);
 
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
@@ -71,24 +81,18 @@ function UserList() {
           value={filters.name}
           onChange={handleFilterChange}
         />
-        <input
-          type="text"
+        <MaskedInput
+          mask="111.111.111-11" // Máscara do CPF
           name="cpf"
-          placeholder="CPF"
           value={filters.cpf}
           onChange={handleFilterChange}
+          placeholder="CPF"
         />
         <input
           type="text"
           name="neighborhood"
           placeholder="Bairro"
           value={filters.neighborhood}
-          onChange={handleFilterChange}
-        />
-        <input
-          type="date"
-          name="date"
-          value={filters.date}
           onChange={handleFilterChange}
         />
         <input
@@ -124,9 +128,18 @@ function UserList() {
           >
             Previous
           </button>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              className={page === index + 1 ? "active" : ""}
+            >
+              {index + 1}
+            </button>
+          ))}
           <button
             onClick={() => handlePageChange(page + 1)}
-            disabled={page === 24}
+            disabled={page === totalPages}
           >
             Next
           </button>
