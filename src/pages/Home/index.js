@@ -1,9 +1,10 @@
 import React, { useCallback, useState, useEffect } from "react";
 import MaskedInput from "react-maskedinput";
-import { findDOMNode } from "react-dom";
-import ReactDOM from "react-dom/client";
+import useAuth from "../../hooks/useAuth";
+import Button from "../../components/Button";
+import { useNavigate } from "react-router-dom";
 
-function UserList() {
+function Home() {
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -14,6 +15,10 @@ function UserList() {
     start_date: "",
     end_date: "",
   });
+
+  const navigate = useNavigate();
+
+  const { signout } = useAuth();
 
   const fetchData = useCallback(async () => {
     const token = "lHONlaWxhAX1Am1SL21xoRcGJbmqma8a217VDBIod7914d4d";
@@ -71,8 +76,24 @@ function UserList() {
     setPage(newPage);
   };
 
+  const handleLogout = () => {
+    signout();
+    navigate("/");
+  };
+
   return (
     <div>
+      <header
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <h1>Bem-vindo ao sistema</h1>
+        <Button Text="Sair" onClick={handleLogout} /> {/* Botão de Logout */}
+      </header>
+
       <div>
         <input
           type="text"
@@ -149,4 +170,4 @@ function UserList() {
   );
 }
 
-export default UserList;
+export default Home;

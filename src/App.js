@@ -1,12 +1,15 @@
 import React from "react";
-import UsersList from "./components/listForm";
+//import UsersList from "./components/listForm";
+import GlobalStyle from "./styles/global";
+import RoutesApp from "./routes";
+import { AuthProvider } from "./contexts/auth";
 
 function App() {
   return (
-    <div className="App">
-      <h1>Filtrar Dados</h1>
-      <UsersList />
-    </div>
+    <AuthProvider>
+      <RoutesApp />
+      <GlobalStyle />
+    </AuthProvider>
   );
 }
 
