@@ -1,7 +1,7 @@
 import React from "react";
 import * as C from "./styles";
 
-const Input = ({ type, placeholder, value, onChange }) => {
+const LoginInput = ({ type, placeholder, value, onChange }) => {
   return (
     <C.Input
       value={value}
@@ -12,4 +12,4 @@ const Input = ({ type, placeholder, value, onChange }) => {
   );
 };
 
-export default Input;
+export default LoginInput;

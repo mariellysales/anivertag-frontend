@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect } from "react";
 import MaskedInput from "react-maskedinput";
 import useAuth from "../../hooks/useAuth";
-import Button from "../../components/Button";
+import LoginButton from "../../components/LoginButton";
 import { useNavigate } from "react-router-dom";
 
 function Home() {
@@ -44,7 +44,7 @@ function Home() {
           "Content-Type": "application/json",
         },
       });
-
+      console.log(response);
       const data = await response.json();
 
       if (data.status) {
@@ -78,7 +78,7 @@ function Home() {
 
   const handleLogout = () => {
     signout();
-    navigate("/");
+    navigate("/signin");
   };
 
   return (
@@ -91,7 +91,7 @@ function Home() {
         }}
       >
         <h1>Bem-vindo ao sistema</h1>
-        <Button Text="Sair" onClick={handleLogout} /> {/* Botão de Logout */}
+        <LoginButton Text="Sair" onClick={handleLogout} />{" "}
       </header>
 
       <div>
@@ -134,9 +134,11 @@ function Home() {
         <div className="grid">
           {users.map((user) => (
             <div key={user.id} className="user-card">
+              <br />
               <p>{user.name}</p>
               <p>{user.cpf}</p>
               <p>{user.email}</p>
+              <p>{user.neighborhood}</p>
               <p>{user.birth_date}</p>
             </div>
           ))}

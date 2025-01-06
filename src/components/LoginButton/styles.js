@@ -1,13 +1,13 @@
 import styled from "styled-components";
 
-export const Button = styled.button`
+export const LoginButton = styled.button`
   padding: 16px 20px;
   outline: none;
   border: none;
   border-radius: 5px;
   width: 100%;
   cursor: pointer;
-  background-color: #046ee5;
+  background-color: rgb(130, 74, 220);
   color: white;
   font-weight: 600;
   font-size: 16px;

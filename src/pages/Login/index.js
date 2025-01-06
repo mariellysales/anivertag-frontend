@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import * as C from "./styles";
-import Input from "../../components/Input";
-import Button from "../../components/Button";
+import Input from "../../components/LoginInput";
+import LoginButton from "../../components/LoginButton";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 
-const Signin = () => {
+const Login = () => {
   const { signin } = useAuth();
   const navigate = useNavigate();
 
@@ -46,25 +46,31 @@ const Signin = () => {
 
   return (
     <C.Container>
-      <C.Label>FAÇA SEU LOGIN</C.Label>
+      <C.LoginTitleLabel>FAÇA SEU LOGIN</C.LoginTitleLabel>
       <C.Content>
-        <Input
-          type="email"
-          placeholder="Digite seu E-mail"
-          value={email}
-          onChange={(e) => [setEmail(e.target.value), setError("")]}
-        />
-        <Input
-          type="password"
-          placeholder="Digite sua password"
-          value={password}
-          onChange={(e) => [setPassword(e.target.value), setError("")]}
-        />
+        <C.LoginInputGroup>
+          <C.LoginContentLabel>E-mail:</C.LoginContentLabel>
+          <Input
+            type="email"
+            placeholder="Digite seu E-mail"
+            value={email}
+            onChange={(e) => [setEmail(e.target.value), setError("")]}
+          />
+        </C.LoginInputGroup>
+        <C.LoginInputGroup>
+          <C.LoginContentLabel>Senha:</C.LoginContentLabel>
+          <Input
+            type="password"
+            placeholder="Digite sua senha"
+            value={password}
+            onChange={(e) => [setPassword(e.target.value), setError("")]}
+          />
+        </C.LoginInputGroup>
         <C.LabelError>{error}</C.LabelError>
-        <Button Text="Entrar" onClick={handleLogin} />
+        <LoginButton Text="Entrar" onClick={handleLogin} />
       </C.Content>
     </C.Container>
   );
 };
 
-export default Signin;
+export default Login;
