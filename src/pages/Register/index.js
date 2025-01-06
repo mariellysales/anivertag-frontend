@@ -19,6 +19,22 @@ const Register = () => {
   const [state, setState] = useState("");
   const [postal_code, setPostalCode] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const REQUIRED_FIELDS = {
+    name: "Nome",
+    cpf: "CPF",
+    email: "E-mail",
+    birth_date: "Data de nascimento",
+    main_phone: "Telefone principal",
+    reference_contact_name: "Nome do contato de referência",
+    reference_contact: "Telefone do Contato de Referência",
+    street: "Rua",
+    neighborhood: "Bairro",
+    city: "Cidade",
+    state: "Estado",
+    postal_code: "CEP",
+  };
 
   const formatDate = (value) => {
     const numbers = value.replace(/\D/g, "");
@@ -40,6 +56,9 @@ const Register = () => {
 
   const maskPhone = (value) => {
     const numbers = value.replace(/\D/g, "");
+
+    if (!numbers) return "";
+
     if (numbers.length <= 2) {
       return `(${numbers}`;
     } else if (numbers.length <= 6) {
@@ -68,26 +87,54 @@ const Register = () => {
 
   const handleRegister = async () => {
     if (
-      !name ||
-      !cpf ||
-      !email ||
-      !birth_date ||
-      !main_phone ||
-      !reference_contact_name ||
-      !reference_contact ||
-      !neighborhood ||
-      !city ||
+      !name &&
+      !cpf &&
+      !email &&
+      !birth_date &&
+      !main_phone &&
+      !reference_contact_name &&
+      !reference_contact &&
+      !neighborhood &&
+      !city &&
       !state
     ) {
-      setError("Preencha todos os campos obrigatórios");
+      setError("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
+
+    for (const [field, label] of Object.entries(REQUIRED_FIELDS)) {
+      if (!window[field]) {
+        setError(`O campo '${label}' é obrigatório`);
+        return;
+      }
+    }
+
+    setLoading(true);
+
+    const resetForm = () => {
+      setName("");
+      setCpf("");
+      setEmail("");
+      setBirthDate("");
+      setMainPhone("");
+      setReferenceContactName("");
+      setReferenceContact("");
+      setStreet("");
+      setNumber("");
+      setAdditionalInformation("");
+      setNeighborhood("");
+      setCity("");
+      setState("");
+      setPostalCode("");
+      setError("");
+    };
 
     try {
       const formattedDate = convertDateToDBFormat(birth_date);
       const formattedMainPhone = maskPhone(main_phone);
       const formattedReferencePhone = maskPhone(reference_contact);
       const formattedPostalCode = maskPostalCode(postal_code);
+      const formattedCpf = maskCPF(cpf);
 
       const response = await fetch("http://127.0.0.1:8000/api/full-register", {
         method: "POST",
@@ -96,7 +143,7 @@ const Register = () => {
         },
         body: JSON.stringify({
           name,
-          cpf,
+          cpf: formattedCpf,
           email,
           birth_date: formattedDate,
           main_phone: formattedMainPhone,
@@ -105,8 +152,8 @@ const Register = () => {
           is_active: true,
           postal_code: formattedPostalCode,
           street,
-          number,
-          additional_information,
+          number: number || null,
+          additional_information: additional_information || null,
           neighborhood,
           city,
           state,
@@ -117,12 +164,15 @@ const Register = () => {
       const data = await response.json();
 
       if (data.status === true) {
+        resetForm();
         alert("Cadastro realizado com sucesso");
       } else {
-        setError("Erro ao tentar cadastrar1");
+        setError("Erro ao tentar cadastrar");
       }
     } catch (error) {
-      setError("Erro ao tentar cadastrar2");
+      setError("Erro ao tentar cadastrar");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -212,7 +262,7 @@ const Register = () => {
 
         <C.RegisterInputGroup>
           <C.RegisterContentLabel htmlFor="reference_contact">
-            Contato de Referência:
+            Telefone do Contato de Referência:
           </C.RegisterContentLabel>
           <RegisterInput
             type="text"
@@ -308,7 +358,11 @@ const Register = () => {
         </C.RegisterInputGroup>
 
         <C.LabelError>{error}</C.LabelError>
-        <LoginButton Text="Cadastrar" onClick={handleRegister} />
+        <LoginButton
+          Text={loading ? "Cadastrando..." : "Cadastrar"}
+          onClick={handleRegister}
+          disabled={loading}
+        />
       </C.Content>
     </C.Container>
   );
