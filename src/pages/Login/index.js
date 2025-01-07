@@ -12,12 +12,15 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
       setError("Preencha todos os campos");
       return;
     }
+
+    setLoading(true);
 
     try {
       const response = await fetch("http://127.0.0.1:8000/api/login", {
@@ -41,6 +44,8 @@ const Login = () => {
       }
     } catch (error) {
       setError("Erro ao tentar fazer login");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -67,7 +72,11 @@ const Login = () => {
           />
         </C.LoginInputGroup>
         <C.LabelError>{error}</C.LabelError>
-        <LoginButton Text="Entrar" onClick={handleLogin} />
+        <LoginButton
+          Text={loading ? "Entrando..." : "Entrar"}
+          onClick={handleLogin}
+          disabled={loading}
+        />
       </C.Content>
     </C.Container>
   );
