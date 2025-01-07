@@ -9,4 +9,9 @@ export const Input = styled.input`
 
   background-color: #f0f2f5;
   border: none;
+
+  &:disabled {
+    background-color: #c5c9d1;
+    cursor: not-allowed;
+  }
 `;

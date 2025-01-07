@@ -68,4 +68,9 @@ export const Strong = styled.strong`
     text-decoration: none;
     color: #676767;
   }
+
+  .stateInput {
+    border-color: red;
+    background-color: lightyellow;
+  }
 `;

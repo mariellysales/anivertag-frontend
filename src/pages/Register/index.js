@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import * as C from "./styles";
 import RegisterInput from "../../components/RegisterInput";
 import LoginButton from "../../components/LoginButton";
 
 const Register = () => {
+  const successMessageRef = useRef(null);
   const [name, setName] = useState("");
   const [cpf, setCpf] = useState("");
   const [email, setEmail] = useState("");
@@ -16,10 +17,10 @@ const Register = () => {
   const [additional_information, setAdditionalInformation] = useState("");
   const [neighborhood, setNeighborhood] = useState("");
   const [city, setCity] = useState("");
-  const [state, setState] = useState("");
   const [postal_code, setPostalCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const REQUIRED_FIELDS = {
     name: "Nome",
@@ -32,7 +33,6 @@ const Register = () => {
     street: "Rua",
     neighborhood: "Bairro",
     city: "Cidade",
-    state: "Estado",
     postal_code: "CEP",
   };
 
@@ -79,10 +79,27 @@ const Register = () => {
     return value.replace(/\D/g, "").replace(/(\d{5})(\d{3})/, "$1-$2");
   };
 
+  const isPostalCodeFromGoias = (postal_code) => {
+    const numericPostalCode = postal_code.replace(/\D/g, "");
+
+    const postalCodeNumber = parseInt(numericPostalCode, 10);
+
+    if (postalCodeNumber < 75000000 || postalCodeNumber > 76799999) {
+      return false;
+    }
+
+    return true;
+  };
+
   const maskCPF = (value) => {
     return value
       .replace(/\D/g, "")
       .replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
   };
 
   const handleRegister = async () => {
@@ -96,17 +113,34 @@ const Register = () => {
       !reference_contact &&
       !neighborhood &&
       !city &&
-      !state
+      !postal_code
     ) {
       setError("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
 
+    if (!number && !additional_information) {
+      setError(
+        "Por favor, preencha pelo menos um dos campos: 'Número' ou 'Informações Adicionais'."
+      );
+      return;
+    }
+
     for (const [field, label] of Object.entries(REQUIRED_FIELDS)) {
-      if (!window[field]) {
+      if (!eval(field)) {
         setError(`O campo '${label}' é obrigatório`);
         return;
       }
+    }
+
+    if (!validateEmail(email)) {
+      setError("O e-mail não é válido.");
+      return;
+    }
+
+    if (!isPostalCodeFromGoias(postal_code)) {
+      setError("O CEP informado não pertence ao estado de Goiás.");
+      return;
     }
 
     setLoading(true);
@@ -124,7 +158,6 @@ const Register = () => {
       setAdditionalInformation("");
       setNeighborhood("");
       setCity("");
-      setState("");
       setPostalCode("");
       setError("");
     };
@@ -156,21 +189,30 @@ const Register = () => {
           additional_information: additional_information || null,
           neighborhood,
           city,
-          state,
+          state: "GO",
           country: "Brasil",
         }),
       });
 
       const data = await response.json();
 
-      if (data.status === true) {
+      if (data.status === "duplicate") {
+        setError("Usuário já está cadastrado.");
+      } else if (data.status === "invalid") {
+        setError("CPF inválido.");
+      } else if (data.status === true) {
         resetForm();
-        alert("Cadastro realizado com sucesso");
+        setSuccessMessage("Cadastro realizado com sucesso!");
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
       } else {
-        setError("Erro ao tentar cadastrar");
+        setError("Erro ao tentar cadastrar1");
       }
     } catch (error) {
-      setError("Erro ao tentar cadastrar");
+      setError("Erro ao tentar cadastrar2");
+      setLoading(true);
     } finally {
       setLoading(false);
     }
@@ -182,6 +224,14 @@ const Register = () => {
         PREPARAMOS ALGO INCRÍVEL PARA O SEU ANIVERSÁRIO – CADASTRE-SE!
       </C.TitleRegisterLabel>
       <C.Content>
+        {successMessage && (
+          <div
+            ref={successMessageRef}
+            style={{ color: "green", marginTop: "20px" }}
+          >
+            {successMessage}
+          </div>
+        )}
         <C.RegisterInputGroup>
           <C.RegisterContentLabel htmlFor="name">Nome:</C.RegisterContentLabel>
           <RegisterInput
@@ -201,6 +251,7 @@ const Register = () => {
               setCpf(formattedCPF);
               setError("");
             }}
+            maxLength="14"
             required
           />
         </C.RegisterInputGroup>
@@ -321,28 +372,6 @@ const Register = () => {
         </C.RegisterInputGroup>
 
         <C.RegisterInputGroup>
-          <C.RegisterContentLabel htmlFor="city">
-            Cidade:
-          </C.RegisterContentLabel>
-          <RegisterInput
-            type="text"
-            value={city}
-            onChange={(e) => [setCity(e.target.value), setError("")]}
-          />
-        </C.RegisterInputGroup>
-
-        <C.RegisterInputGroup>
-          <C.RegisterContentLabel htmlFor="state">
-            Estado:
-          </C.RegisterContentLabel>
-          <RegisterInput
-            type="text"
-            value={state}
-            onChange={(e) => [setState(e.target.value), setError("")]}
-          />
-        </C.RegisterInputGroup>
-
-        <C.RegisterInputGroup>
           <C.RegisterContentLabel htmlFor="postal_code">
             CEP:
           </C.RegisterContentLabel>
@@ -354,6 +383,25 @@ const Register = () => {
               setPostalCode(formattedCEP);
               setError("");
             }}
+            maxLength="9"
+          />
+        </C.RegisterInputGroup>
+
+        <C.RegisterInputGroup>
+          <C.RegisterContentLabel htmlFor="state">
+            Estado:
+          </C.RegisterContentLabel>
+          <RegisterInput type="text" value="Goiás" readOnly disabled />
+        </C.RegisterInputGroup>
+
+        <C.RegisterInputGroup>
+          <C.RegisterContentLabel htmlFor="city">
+            Cidade:
+          </C.RegisterContentLabel>
+          <RegisterInput
+            type="text"
+            value={city}
+            onChange={(e) => [setCity(e.target.value), setError("")]}
           />
         </C.RegisterInputGroup>
 
