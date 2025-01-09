@@ -37,8 +37,7 @@ export const Th = styled.th`
   }
 
   @media (max-width: 500px) {
-    padding: 6px;
-    padding: 10px;
+    padding: 7px;
   }
 
   @media (max-width: 475px) {

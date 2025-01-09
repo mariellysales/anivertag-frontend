@@ -11,19 +11,41 @@ import {
   Button */
 } from "./style";
 
-const UserTable = ({ users, onEdit, onDelete, onPrint, onSelect }) => {
+const formatDate = (date) => {
+  if (!date) return "";
+  const newDate = new Date(date);
+  const day = String(newDate.getDate() + 1).padStart(2, "0");
+  const month = String(newDate.getMonth() + 1).padStart(2, "0");
+  return `${day}/${month}`;
+};
+
+const UserTable = ({
+  users,
+  onEdit,
+  onDelete,
+  onPrint,
+  onSelect,
+  selectAll,
+  onSelectAll,
+}) => {
   return (
     <TableContainer>
       <Table>
         <thead>
           <tr>
-            <Th></Th>
+            <Th>
+              <input
+                type="checkbox"
+                checked={selectAll}
+                onChange={(e) => onSelectAll(e.target.checked)}
+              />
+            </Th>
             <Th>Nome</Th>
             <Th>CPF</Th>
             <Th>Email</Th>
             <Th>Cidade</Th>
-            <Th>Data de Nascimento</Th>
-            <Th></Th>
+            <Th>Aniversário</Th>
+            <Th>Ações</Th>
           </tr>
         </thead>
         <tbody>
@@ -32,6 +54,7 @@ const UserTable = ({ users, onEdit, onDelete, onPrint, onSelect }) => {
               <Td>
                 <input
                   type="checkbox"
+                  checked={user.isSelected || false}
                   onChange={(e) => onSelect(user.id, e.target.checked)}
                 />
               </Td>
@@ -39,7 +62,7 @@ const UserTable = ({ users, onEdit, onDelete, onPrint, onSelect }) => {
               <Td>{user.cpf}</Td>
               <Td>{user.email}</Td>
               <Td>{user.address?.city}</Td>
-              <Td>{user.birth_date}</Td>
+              <Td>{formatDate(user.birth_date)}</Td>
               <Td>
                 <Button onClick={() => onEdit(user.id)}>
                   <FaEdit />

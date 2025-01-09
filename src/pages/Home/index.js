@@ -1,24 +1,95 @@
 import React, { useCallback, useState, useEffect } from "react";
-import MaskedInput from "react-maskedinput";
-import useAuth from "../../hooks/useAuth";
-import LoginButton from "../../components/LoginButton";
-import { useNavigate } from "react-router-dom";
+//import useAuth from "../../hooks/useAuth";
+//import { useNavigate } from "react-router-dom";
+import * as C from "./styles";
+import HomeInput from "../../components/HomeInput";
+import UserTable from "../../components/UserTable";
 
 function Home() {
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectAll, setSelectAll] = useState(false);
   const [filters, setFilters] = useState({
     name: "",
     cpf: "",
-    neighborhood: "",
+    city: "",
     start_date: "",
     end_date: "",
   });
 
-  const navigate = useNavigate();
+  const handleEdit = (userId) => {
+    console.log("Edit user:", userId);
+  };
 
-  const { signout } = useAuth();
+  const handleDelete = (userId) => {
+    console.log("Delete user:", userId);
+    setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+  };
+
+  const handleSelectAll = (isSelected) => {
+    setSelectAll(isSelected);
+    setUsers((prevUsers) =>
+      prevUsers.map((user) => ({
+        ...user,
+        isSelected: isSelected,
+      }))
+    );
+  };
+
+  const handleSelect = (userId, isSelected) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === userId ? { ...user, isSelected } : user
+      )
+    );
+
+    const allSelected = users.every((user) =>
+      user.id === userId ? isSelected : user.isSelected
+    );
+    setSelectAll(allSelected);
+  };
+
+  //const navigate = useNavigate();
+
+  // const { signout } = useAuth();
+
+  const maskCPF = (value) => {
+    // Remove todos os caracteres não numéricos
+    const cleanValue = value.replace(/\D/g, "");
+
+    // Aplica a formatação progressivamente conforme o número de caracteres digitados
+    if (cleanValue.length <= 3) {
+      return cleanValue; // Exibe apenas os 3 primeiros números
+    }
+    if (cleanValue.length <= 6) {
+      return cleanValue.replace(/(\d{3})(\d{0,3})/, "$1.$2"); // Exibe os 3 primeiros números seguidos por ponto
+    }
+    if (cleanValue.length <= 9) {
+      return cleanValue.replace(/(\d{3})(\d{3})(\d{0,3})/, "$1.$2.$3"); // Exibe os 3 primeiros números seguidos por 2 pontos
+    }
+    return cleanValue.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, "$1.$2.$3-$4"); // Exibe o CPF completo
+  };
+
+  const handleDateChange = (event) => {
+    const { name, value } = event.target;
+    let newValue = value;
+
+    newValue = newValue.replace(/[^0-9/]/g, "");
+
+    if (newValue.length > 2 && newValue[2] !== "/") {
+      newValue = newValue.substring(0, 2) + "/" + newValue.substring(2);
+    }
+
+    if (newValue.length > 5) {
+      newValue = newValue.substring(0, 5);
+    }
+
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: newValue,
+    }));
+  };
 
   const fetchData = useCallback(async () => {
     const token = "lHONlaWxhAX1Am1SL21xoRcGJbmqma8a217VDBIod7914d4d";
@@ -27,7 +98,7 @@ function Home() {
     const queryParams = new URLSearchParams({
       name: filters.name,
       cpf: filters.cpf,
-      neighborhood: filters.neighborhood,
+      city: filters.city,
       start_date: filters.start_date,
       end_date: filters.end_date,
     });
@@ -44,13 +115,18 @@ function Home() {
           "Content-Type": "application/json",
         },
       });
-      console.log(response);
       const data = await response.json();
 
       if (data.status) {
-        setUsers(data.users.data);
+        setUsers(
+          data.users.data.map((user) => ({
+            ...user,
+            isSelected: false,
+          }))
+        );
         setTotalPages(data.users.last_page || 1);
       } else {
+        setUsers([]);
         console.error("Erro ao buscar dados");
       }
     } catch (error) {
@@ -64,111 +140,110 @@ function Home() {
 
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [name]: value,
-    }));
 
-    setPage(1);
+    // Aplica a máscara no CPF
+    if (name === "cpf") {
+      const formattedValue = maskCPF(value);
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        [name]: formattedValue,
+      }));
+    } else {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        [name]: value,
+      }));
+    }
+
+    setPage(1); // Reseta para a primeira página sempre que houver alteração no filtro
   };
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
 
-  const handleLogout = () => {
+  /*const handleLogout = () => {
     signout();
     navigate("/signin");
-  };
+  };*/
 
   return (
-    <div>
-      <header
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <h1>Bem-vindo ao sistema</h1>
-        <LoginButton Text="Sair" onClick={handleLogout} />{" "}
-      </header>
-
-      <div>
-        <input
+    <C.Content>
+      <C.TitleHomeLabel>CONSULTA DE ANIVERSARIANTES</C.TitleHomeLabel>
+      <C.HomeInputGroup>
+        <HomeInput
           type="text"
           name="name"
           placeholder="Nome"
           value={filters.name}
           onChange={handleFilterChange}
         />
-        <MaskedInput
-          mask="111.111.111-11"
+        <HomeInput
+          type="text"
           name="cpf"
           value={filters.cpf}
           onChange={handleFilterChange}
           placeholder="CPF"
         />
-        <input
+        <HomeInput
           type="text"
-          name="neighborhood"
-          placeholder="Bairro"
-          value={filters.neighborhood}
+          name="city"
+          placeholder="Cidade"
+          value={filters.city}
           onChange={handleFilterChange}
         />
-        <input
-          type="date"
+        <HomeInput
+          type="text"
           name="start_date"
           value={filters.start_date}
-          onChange={handleFilterChange}
+          onChange={handleDateChange}
+          placeholder="Dia/Mês inicial"
+          maxLength="5"
         />
-        <input
-          type="date"
+        <HomeInput
+          type="text"
           name="end_date"
           value={filters.end_date}
-          onChange={handleFilterChange}
+          onChange={handleDateChange}
+          placeholder="Dia/Mês final"
+          maxLength="5"
         />
-      </div>
+      </C.HomeInputGroup>
 
-      <div>
-        <div className="grid">
-          {users.map((user) => (
-            <div key={user.id} className="user-card">
-              <br />
-              <p>{user.name}</p>
-              <p>{user.cpf}</p>
-              <p>{user.email}</p>
-              <p>{user.neighborhood}</p>
-              <p>{user.birth_date}</p>
-            </div>
-          ))}
-        </div>
-
-        <div>
-          <button
-            onClick={() => handlePageChange(page - 1)}
-            disabled={page === 1}
+      <C.Grid>
+        <UserTable
+          users={users}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onSelect={handleSelect}
+          onSelectAll={handleSelectAll}
+          selectAll={selectAll}
+        />
+      </C.Grid>
+      <C.PageButtonGroup>
+        <C.PageButton
+          onClick={() => handlePageChange(page - 1)}
+          disabled={page === 1}
+        >
+          Previous
+        </C.PageButton>
+        {Array.from({ length: totalPages }, (_, index) => (
+          <C.PageButton
+            key={index + 1}
+            onClick={() => handlePageChange(index + 1)}
+            className={page === index + 1 ? "active" : ""}
           >
-            Previous
-          </button>
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index + 1}
-              onClick={() => handlePageChange(index + 1)}
-              className={page === index + 1 ? "active" : ""}
-            >
-              {index + 1}
-            </button>
-          ))}
-          <button
-            onClick={() => handlePageChange(page + 1)}
-            disabled={page === totalPages}
-          >
-            Next
-          </button>
-        </div>
-      </div>
-    </div>
+            {index + 1}
+          </C.PageButton>
+        ))}
+        <C.PageButton
+          onClick={() => handlePageChange(page + 1)}
+          disabled={page === totalPages}
+        >
+          Next
+        </C.PageButton>
+      </C.PageButtonGroup>
+    </C.Content>
   );
 }
 
