@@ -55,20 +55,18 @@ function Home() {
   // const { signout } = useAuth();
 
   const maskCPF = (value) => {
-    // Remove todos os caracteres não numéricos
     const cleanValue = value.replace(/\D/g, "");
 
-    // Aplica a formatação progressivamente conforme o número de caracteres digitados
     if (cleanValue.length <= 3) {
-      return cleanValue; // Exibe apenas os 3 primeiros números
+      return cleanValue;
     }
     if (cleanValue.length <= 6) {
-      return cleanValue.replace(/(\d{3})(\d{0,3})/, "$1.$2"); // Exibe os 3 primeiros números seguidos por ponto
+      return cleanValue.replace(/(\d{3})(\d{0,3})/, "$1.$2");
     }
     if (cleanValue.length <= 9) {
-      return cleanValue.replace(/(\d{3})(\d{3})(\d{0,3})/, "$1.$2.$3"); // Exibe os 3 primeiros números seguidos por 2 pontos
+      return cleanValue.replace(/(\d{3})(\d{3})(\d{0,3})/, "$1.$2.$3");
     }
-    return cleanValue.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, "$1.$2.$3-$4"); // Exibe o CPF completo
+    return cleanValue.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, "$1.$2.$3-$4");
   };
 
   const handleDateChange = (event) => {
@@ -95,42 +93,54 @@ function Home() {
     const token = "lHONlaWxhAX1Am1SL21xoRcGJbmqma8a217VDBIod7914d4d";
     let url = `http://127.0.0.1:8000/api/users-addresses-filter?page=${page}`;
 
-    const queryParams = new URLSearchParams({
-      name: filters.name,
-      cpf: filters.cpf,
-      city: filters.city,
-      start_date: filters.start_date,
-      end_date: filters.end_date,
-    });
+    const activeFilters = Object.entries(filters).reduce(
+      (acc, [key, value]) => {
+        if (
+          (key === "name" && value && value.length >= 1) ||
+          (key === "cpf" && value && value.length >= 3) ||
+          (key === "city" && value && value.length >= 1) ||
+          (key === "start_date" && value && value.length >= 5) ||
+          (key === "end_date" && value && value.length >= 5)
+        ) {
+          acc[key] = value;
+        }
+        return acc;
+      },
+      {}
+    );
+    if (Object.keys(activeFilters).length > 0) {
+      //
+      const queryParams = new URLSearchParams(activeFilters);
 
-    if (queryParams.toString()) {
-      url += `&${queryParams.toString()}`;
-    }
-
-    try {
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-
-      if (data.status) {
-        setUsers(
-          data.users.data.map((user) => ({
-            ...user,
-            isSelected: false,
-          }))
-        );
-        setTotalPages(data.users.last_page || 1);
-      } else {
-        setUsers([]);
-        console.error("Erro ao buscar dados");
+      if (queryParams.toString()) {
+        url += `&${queryParams.toString()}`;
       }
-    } catch (error) {
-      console.error("Erro ao fazer requisição:", error);
+
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+
+        if (data.status) {
+          setUsers(
+            data.users.data.map((user) => ({
+              ...user,
+              isSelected: false,
+            }))
+          );
+          setTotalPages(data.users.last_page || 1);
+        } else {
+          setUsers([]);
+          console.error("Erro ao buscar dados");
+        }
+      } catch (error) {
+        console.error("Erro ao fazer requisição:", error);
+      }
     }
   }, [filters, page]);
 
@@ -141,7 +151,6 @@ function Home() {
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
 
-    // Aplica a máscara no CPF
     if (name === "cpf") {
       const formattedValue = maskCPF(value);
       setFilters((prevFilters) => ({
@@ -155,7 +164,7 @@ function Home() {
       }));
     }
 
-    setPage(1); // Reseta para a primeira página sempre que houver alteração no filtro
+    setPage(1);
   };
 
   const handlePageChange = (newPage) => {
