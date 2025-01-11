@@ -89,6 +89,26 @@ function Home() {
     }));
   };
 
+  const proceedToRequest = (activeFilters) => {
+    let lastFilter = localStorage.getItem("lastFilter");
+
+    if (Object.keys(activeFilters).length > 0) {
+      lastFilter = JSON.parse(lastFilter);
+
+      if (JSON.stringify(lastFilter) !== JSON.stringify(activeFilters)) {
+        localStorage.setItem("lastFilter", JSON.stringify(activeFilters));
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      if (lastFilter) {
+        localStorage.setItem("lastFilter", JSON.stringify(activeFilters));
+      }
+      return true;
+    }
+  };
+
   const fetchData = useCallback(async () => {
     const token = "lHONlaWxhAX1Am1SL21xoRcGJbmqma8a217VDBIod7914d4d";
     let url = `http://127.0.0.1:8000/api/users-addresses-filter?page=${page}`;
@@ -108,10 +128,10 @@ function Home() {
       },
       {}
     );
-    if (Object.keys(activeFilters).length > 0) {
-      //
-      const queryParams = new URLSearchParams(activeFilters);
 
+    const queryParams = new URLSearchParams(activeFilters);
+
+    if (proceedToRequest(activeFilters)) {
       if (queryParams.toString()) {
         url += `&${queryParams.toString()}`;
       }
@@ -150,6 +170,9 @@ function Home() {
 
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
+    if (!value) {
+      localStorage.removeItem("lastFilter");
+    }
 
     if (name === "cpf") {
       const formattedValue = maskCPF(value);
@@ -170,11 +193,6 @@ function Home() {
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
-
-  /*const handleLogout = () => {
-    signout();
-    navigate("/signin");
-  };*/
 
   return (
     <C.Content>
