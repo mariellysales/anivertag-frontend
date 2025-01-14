@@ -148,6 +148,8 @@ const Register = () => {
       setCpf("");
       setEmail("");
       setBirthDate("");
+      setMotherName("");
+      setFatherName("");
       setMainPhone("");
       setReferenceContactName("");
       setReferenceContact("");
@@ -207,6 +209,10 @@ const Register = () => {
           top: 0,
           behavior: "smooth",
         });
+
+        setTimeout(() => {
+          setSuccessMessage("");
+        }, 1500);
       } else {
         setError("Erro ao tentar cadastrar");
       }
