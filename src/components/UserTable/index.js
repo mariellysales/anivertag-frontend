@@ -1,15 +1,7 @@
 import React from "react";
 import { FaEdit, FaTrash, FaPrint } from "react-icons/fa";
-import {
-  TableContainer,
-  Table,
-  Th,
-  Td,
-  Button,
-  /**
-  TrHover,
-  Button */
-} from "./style";
+import { TableContainer, Table, Th, Td, Button } from "./style";
+import { useNavigate } from "react-router-dom";
 
 const formatDate = (date) => {
   if (!date) return "";
@@ -28,6 +20,7 @@ const UserTable = ({
   selectAll,
   onSelectAll,
 }) => {
+  const navigate = useNavigate();
   return (
     <TableContainer>
       <Table>
@@ -64,7 +57,7 @@ const UserTable = ({
               <Td>{user.address?.city}</Td>
               <Td>{formatDate(user.birth_date)}</Td>
               <Td>
-                <Button onClick={() => onEdit(user.id)}>
+                <Button onClick={() => navigate(`/edit/${user.id}`)}>
                   <FaEdit />
                 </Button>
                 <Button onClick={() => onDelete(user.id)}>

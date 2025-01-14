@@ -1,11 +1,15 @@
-import React, { useState, useRef } from "react";
-import * as C from "./styles";
+import React, { useState, useRef, useEffect } from "react";
+import * as C from "../Register/styles";
 import RegisterInput from "../../components/RegisterInput";
 import LoginButton from "../../components/LoginButton";
 import { maskCPF } from "../../utils/utils";
 import Header from "../../components/Header";
 
-const Register = () => {
+import { useParams } from "react-router-dom";
+
+const EditUser = () => {
+  const { id } = useParams();
+
   const successMessageRef = useRef(null);
   const [name, setName] = useState("");
   const [cpf, setCpf] = useState("");
@@ -23,6 +27,64 @@ const Register = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+
+  const token = "lHONlaWxhAX1Am1SL21xoRcGJbmqma8a217VDBIod7914d4d";
+
+  const fetchUserData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/users-address/${id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+
+      if (response.status && data.user) {
+        const user = data.user;
+        const address = user.address;
+
+        let birth_date = new Date(user.birth_date);
+        let day = birth_date.getDate() + 1;
+        let month = birth_date.getMonth() + 1;
+        let year = birth_date.getFullYear();
+
+        day = day < 10 ? "0" + day : day;
+        month = month < 10 ? "0" + month : month;
+
+        const formattedDate = `${day}/${month}/${year}`;
+
+        setName(user.name || "");
+        setCpf(user.cpf || "");
+        setEmail(user.email || "");
+        setBirthDate(formattedDate || "");
+        setMainPhone(user.main_phone || "");
+        setReferenceContactName(user.reference_contact_name || "");
+        setReferenceContact(user.reference_contact || "");
+        setStreet(address?.street || "");
+        setNumber(address?.number || "");
+        setAdditionalInformation(address?.additional_information || "");
+        setNeighborhood(address?.neighborhood || "");
+        setCity(address?.city || "");
+        setPostalCode(address?.postal_code || "");
+      } else {
+        setError("Erro ao carregar os dados do usuário.");
+      }
+    } catch (error) {
+      setError("Erro ao carregar os dados do usuário.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, [id]);
 
   const REQUIRED_FIELDS = {
     name: "Nome",
@@ -85,7 +147,6 @@ const Register = () => {
     const numericPostalCode = postal_code.replace(/\D/g, "");
     const postalCodeNumber = parseInt(numericPostalCode, 10);
 
-    // Verifica se o CEP está entre 74000000 e 77999999 (faixa completa de GO)
     if (postalCodeNumber < 74000000 || postalCodeNumber > 77999999) {
       return false;
     }
@@ -141,23 +202,6 @@ const Register = () => {
 
     setLoading(true);
 
-    const resetForm = () => {
-      setName("");
-      setCpf("");
-      setEmail("");
-      setBirthDate("");
-      setMainPhone("");
-      setReferenceContactName("");
-      setReferenceContact("");
-      setStreet("");
-      setNumber("");
-      setAdditionalInformation("");
-      setNeighborhood("");
-      setCity("");
-      setPostalCode("");
-      setError("");
-    };
-
     try {
       const formattedDate = convertDateToDBFormat(birth_date);
       const formattedMainPhone = maskPhone(main_phone);
@@ -165,30 +209,34 @@ const Register = () => {
       const formattedPostalCode = maskPostalCode(postal_code);
       const formattedCpf = maskCPF(cpf);
 
-      const response = await fetch("http://127.0.0.1:8000/api/full-register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          cpf: formattedCpf,
-          email,
-          birth_date: formattedDate,
-          main_phone: formattedMainPhone,
-          reference_contact_name,
-          reference_contact: formattedReferencePhone,
-          is_active: true,
-          postal_code: formattedPostalCode,
-          street,
-          number: number || null,
-          additional_information: additional_information || null,
-          neighborhood,
-          city,
-          state: "GO",
-          country: "Brasil",
-        }),
-      });
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/users-address/" + id,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            cpf: formattedCpf,
+            email,
+            birth_date: formattedDate,
+            main_phone: formattedMainPhone,
+            reference_contact_name,
+            reference_contact: formattedReferencePhone,
+            is_active: true,
+            postal_code: formattedPostalCode,
+            street,
+            number: number || null,
+            additional_information: additional_information || null,
+            neighborhood,
+            city,
+            state: "GO",
+            country: "Brasil",
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -197,17 +245,16 @@ const Register = () => {
       } else if (data.status === "invalid") {
         setError("CPF inválido.");
       } else if (data.status === true) {
-        resetForm();
-        setSuccessMessage("Cadastro realizado com sucesso!");
+        setSuccessMessage("Usuário editado com sucesso!");
         window.scrollTo({
           top: 0,
           behavior: "smooth",
         });
       } else {
-        setError("Erro ao tentar cadastrar");
+        setError("Erro ao tentar editar");
       }
     } catch (error) {
-      setError("Erro ao tentar cadastrar");
+      setError("Erro ao tentar editar");
       setLoading(true);
     } finally {
       setLoading(false);
@@ -218,9 +265,7 @@ const Register = () => {
     <C.Container>
       <Header></Header>
       <C.Body>
-        <C.TitleRegisterLabel>
-          PREPARAMOS ALGO INCRÍVEL PARA O SEU ANIVERSÁRIO – CADASTRE-SE!
-        </C.TitleRegisterLabel>
+        <C.TitleRegisterLabel>EDITAR USUÁRIO</C.TitleRegisterLabel>
         <C.Content>
           {successMessage && (
             <div
@@ -409,7 +454,7 @@ const Register = () => {
 
           <C.LabelError>{error}</C.LabelError>
           <LoginButton
-            Text={loading ? "Cadastrando..." : "Cadastrar"}
+            Text={loading ? "Editando..." : "Editar"}
             onClick={handleRegister}
             disabled={loading}
           />
@@ -419,4 +464,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default EditUser;

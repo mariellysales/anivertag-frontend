@@ -1,6 +1,8 @@
 import styled from "styled-components";
 
-export const Content = styled.div`
+export const Content = styled.div``;
+
+export const Body = styled.div`
   gap: 15px;
   display: flex;
   align-items: center;
@@ -8,7 +10,7 @@ export const Content = styled.div`
   flex-direction: column;
   width: 100%;
   box-shadow: 0 1px 2px #0003;
-  padding: 20px;
+  padding: 0px 20px;
 
   @media (max-width: 590px) {
     padding: 0px;
@@ -32,6 +34,27 @@ export const HomeInputGroup = styled.div`
   @media (max-width: 900px) {
     display: flex;
     flex-direction: column;
+  }
+`;
+
+export const Buttons = styled.div`
+  display: flex;
+  gap: 16px;
+  margin-right: auto;
+`;
+
+export const Button = styled.button`
+  padding: 8px 16px;
+  background-color: rgb(103, 27, 125);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: auto;
+
+  &:hover {
+    background-color: #4e0e58;
   }
 `;
 
@@ -65,6 +88,6 @@ export const PageButton = styled.button`
   font-size: 15px;
 
   &:hover {
-    color: rgb(130, 74, 220);
+    color: rgb(103, 27, 125);
   }
 `;

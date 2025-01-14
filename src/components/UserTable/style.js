@@ -70,10 +70,10 @@ export const Button = styled.button`
   border: none;
   cursor: pointer;
   padding: 6px 10px;
-  color: rgb(130, 74, 220);
+  color: rgb(103, 27, 125);
   font-size: 20px;
   &:hover {
-    color: rgb(102, 59, 173);
+    color: #4e0e58;
   }
 
   @media (max-width: 775px) {

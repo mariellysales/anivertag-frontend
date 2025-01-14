@@ -1,9 +1,10 @@
 import React, { useCallback, useState, useEffect } from "react";
-//import useAuth from "../../hooks/useAuth";
-//import { useNavigate } from "react-router-dom";
 import * as C from "./styles";
 import HomeInput from "../../components/HomeInput";
 import UserTable from "../../components/UserTable";
+import { maskCPF } from "../../utils/utils";
+import Header from "../../components/Header";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
   const [users, setUsers] = useState([]);
@@ -17,6 +18,18 @@ function Home() {
     start_date: "",
     end_date: "",
   });
+
+  const handleLogout = () => {
+    console.log("Usuário deslogado.");
+    localStorage.removeItem("authToken");
+    window.location.href = "/login";
+  };
+
+  const navigate = useNavigate();
+
+  const handleBackHome = () => {
+    navigate("/home");
+  };
 
   const handleEdit = (userId) => {
     console.log("Edit user:", userId);
@@ -48,25 +61,6 @@ function Home() {
       user.id === userId ? isSelected : user.isSelected
     );
     setSelectAll(allSelected);
-  };
-
-  //const navigate = useNavigate();
-
-  // const { signout } = useAuth();
-
-  const maskCPF = (value) => {
-    const cleanValue = value.replace(/\D/g, "");
-
-    if (cleanValue.length <= 3) {
-      return cleanValue;
-    }
-    if (cleanValue.length <= 6) {
-      return cleanValue.replace(/(\d{3})(\d{0,3})/, "$1.$2");
-    }
-    if (cleanValue.length <= 9) {
-      return cleanValue.replace(/(\d{3})(\d{3})(\d{0,3})/, "$1.$2.$3");
-    }
-    return cleanValue.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, "$1.$2.$3-$4");
   };
 
   const handleDateChange = (event) => {
@@ -196,80 +190,88 @@ function Home() {
 
   return (
     <C.Content>
-      <C.TitleHomeLabel>CONSULTA DE ANIVERSARIANTES</C.TitleHomeLabel>
-      <C.HomeInputGroup>
-        <HomeInput
-          type="text"
-          name="name"
-          placeholder="Nome"
-          value={filters.name}
-          onChange={handleFilterChange}
-        />
-        <HomeInput
-          type="text"
-          name="cpf"
-          value={filters.cpf}
-          onChange={handleFilterChange}
-          placeholder="CPF"
-        />
-        <HomeInput
-          type="text"
-          name="city"
-          placeholder="Cidade"
-          value={filters.city}
-          onChange={handleFilterChange}
-        />
-        <HomeInput
-          type="text"
-          name="start_date"
-          value={filters.start_date}
-          onChange={handleDateChange}
-          placeholder="Dia/Mês inicial"
-          maxLength="5"
-        />
-        <HomeInput
-          type="text"
-          name="end_date"
-          value={filters.end_date}
-          onChange={handleDateChange}
-          placeholder="Dia/Mês final"
-          maxLength="5"
-        />
-      </C.HomeInputGroup>
+      <Header onLogout={handleLogout} onBackHome={handleBackHome} />
+      <C.Body>
+        <C.TitleHomeLabel>CONSULTA DE ANIVERSARIANTES</C.TitleHomeLabel>
+        <C.HomeInputGroup>
+          <HomeInput
+            type="text"
+            name="name"
+            placeholder="Nome"
+            value={filters.name}
+            onChange={handleFilterChange}
+          />
+          <HomeInput
+            type="text"
+            name="cpf"
+            value={filters.cpf}
+            onChange={handleFilterChange}
+            placeholder="CPF"
+          />
+          <HomeInput
+            type="text"
+            name="city"
+            placeholder="Cidade"
+            value={filters.city}
+            onChange={handleFilterChange}
+          />
+          <HomeInput
+            type="text"
+            name="start_date"
+            value={filters.start_date}
+            onChange={handleDateChange}
+            placeholder="Dia/Mês inicial"
+            maxLength="5"
+          />
+          <HomeInput
+            type="text"
+            name="end_date"
+            value={filters.end_date}
+            onChange={handleDateChange}
+            placeholder="Dia/Mês final"
+            maxLength="5"
+          />
+        </C.HomeInputGroup>
 
-      <C.Grid>
-        <UserTable
-          users={users}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onSelect={handleSelect}
-          onSelectAll={handleSelectAll}
-          selectAll={selectAll}
-        />
-      </C.Grid>
-      <C.PageButtonGroup>
-        <C.PageButton
-          onClick={() => handlePageChange(page - 1)}
-          disabled={page === 1}
-        >
-          Previous
-        </C.PageButton>
-        {Array.from({ length: totalPages }, (_, index) => (
+        <C.Buttons>
+          <C.Button>Imprimir selecionados</C.Button>
+          <C.Button>Deletar selecionados</C.Button>
+        </C.Buttons>
+
+        <C.Grid>
+          <UserTable
+            users={users}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onSelect={handleSelect}
+            onSelectAll={handleSelectAll}
+            selectAll={selectAll}
+          />
+        </C.Grid>
+        <C.PageButtonGroup>
           <C.PageButton
-            key={index + 1}
-            onClick={() => handlePageChange(index + 1)}
-            className={page === index + 1 ? "active" : ""}
+            onClick={() => handlePageChange(page - 1)}
+            disabled={page === 1}
           >
-            {index + 1}
+            Anterior
           </C.PageButton>
-        ))}
-        <C.PageButton
-          onClick={() => handlePageChange(page + 1)}
-          disabled={page === totalPages}
-        >
-          Next
-        </C.PageButton>
-      </C.PageButtonGroup>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <C.PageButton
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              className={page === index + 1 ? "active" : ""}
+            >
+              {index + 1}
+            </C.PageButton>
+          ))}
+          <C.PageButton
+            onClick={() => handlePageChange(page + 1)}
+            disabled={page === totalPages}
+          >
+            Próximo
+          </C.PageButton>
+        </C.PageButtonGroup>
+      </C.Body>
     </C.Content>
   );
 }

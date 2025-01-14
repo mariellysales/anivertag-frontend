@@ -4,6 +4,7 @@ import Input from "../../components/LoginInput";
 import LoginButton from "../../components/LoginButton";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
+import Header from "../../components/Header";
 
 const Login = () => {
   const { signin } = useAuth();
@@ -51,33 +52,36 @@ const Login = () => {
 
   return (
     <C.Container>
-      <C.LoginTitleLabel>FAÇA SEU LOGIN</C.LoginTitleLabel>
-      <C.Content>
-        <C.LoginInputGroup>
-          <C.LoginContentLabel>E-mail:</C.LoginContentLabel>
-          <Input
-            type="email"
-            placeholder="Digite seu E-mail"
-            value={email}
-            onChange={(e) => [setEmail(e.target.value), setError("")]}
+      <Header></Header>
+      <C.Body>
+        <C.LoginTitleLabel>FAÇA SEU LOGIN</C.LoginTitleLabel>
+        <C.Content>
+          <C.LoginInputGroup>
+            <C.LoginContentLabel>E-mail:</C.LoginContentLabel>
+            <Input
+              type="email"
+              placeholder="Digite seu E-mail"
+              value={email}
+              onChange={(e) => [setEmail(e.target.value), setError("")]}
+            />
+          </C.LoginInputGroup>
+          <C.LoginInputGroup>
+            <C.LoginContentLabel>Senha:</C.LoginContentLabel>
+            <Input
+              type="password"
+              placeholder="Digite sua senha"
+              value={password}
+              onChange={(e) => [setPassword(e.target.value), setError("")]}
+            />
+          </C.LoginInputGroup>
+          <C.LabelError>{error}</C.LabelError>
+          <LoginButton
+            Text={loading ? "Entrando..." : "Entrar"}
+            onClick={handleLogin}
+            disabled={loading}
           />
-        </C.LoginInputGroup>
-        <C.LoginInputGroup>
-          <C.LoginContentLabel>Senha:</C.LoginContentLabel>
-          <Input
-            type="password"
-            placeholder="Digite sua senha"
-            value={password}
-            onChange={(e) => [setPassword(e.target.value), setError("")]}
-          />
-        </C.LoginInputGroup>
-        <C.LabelError>{error}</C.LabelError>
-        <LoginButton
-          Text={loading ? "Entrando..." : "Entrar"}
-          onClick={handleLogin}
-          disabled={loading}
-        />
-      </C.Content>
+        </C.Content>
+      </C.Body>
     </C.Container>
   );
 };
