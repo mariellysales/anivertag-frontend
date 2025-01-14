@@ -89,7 +89,6 @@ const EditUser = () => {
   const REQUIRED_FIELDS = {
     name: "Nome",
     cpf: "CPF",
-    email: "E-mail",
     birth_date: "Data de nascimento",
     main_phone: "Telefone principal",
     reference_contact_name: "Nome do contato de referência",
@@ -163,7 +162,6 @@ const EditUser = () => {
     if (
       !name &&
       !cpf &&
-      !email &&
       !birth_date &&
       !main_phone &&
       !reference_contact_name &&
@@ -190,7 +188,7 @@ const EditUser = () => {
       }
     }
 
-    if (!validateEmail(email)) {
+    if (email && !validateEmail(email)) {
       setError("O e-mail não é válido.");
       return;
     }
