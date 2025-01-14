@@ -83,24 +83,31 @@ function Home() {
     }));
   };
 
-  const proceedToRequest = (activeFilters) => {
+  const proceedToRequest = (activeFilters, filters) => {
     let lastFilter = localStorage.getItem("lastFilter");
 
-    if (Object.keys(activeFilters).length > 0) {
-      lastFilter = JSON.parse(lastFilter);
+    if (
+      (filters.start_date && filters.start_date.length !== 5) ||
+      (filters.end_date && filters.end_date.length !== 5)
+    ) {
+      return false;
+    }
 
-      if (JSON.stringify(lastFilter) !== JSON.stringify(activeFilters)) {
-        localStorage.setItem("lastFilter", JSON.stringify(activeFilters));
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      if (lastFilter) {
-        localStorage.setItem("lastFilter", JSON.stringify(activeFilters));
-      }
+    if (!lastFilter) {
+      localStorage.setItem("lastFilter", JSON.stringify(activeFilters));
       return true;
     }
+
+    if (
+      lastFilter &&
+      JSON.stringify(lastFilter) !== JSON.stringify(activeFilters) &&
+      Object.keys(activeFilters).length > 0
+    ) {
+      localStorage.setItem("lastFilter", JSON.stringify(activeFilters));
+      return true;
+    }
+
+    return false;
   };
 
   const fetchData = useCallback(async () => {
@@ -125,7 +132,7 @@ function Home() {
 
     const queryParams = new URLSearchParams(activeFilters);
 
-    if (proceedToRequest(activeFilters)) {
+    if (proceedToRequest(activeFilters, filters)) {
       if (queryParams.toString()) {
         url += `&${queryParams.toString()}`;
       }
@@ -159,6 +166,7 @@ function Home() {
   }, [filters, page]);
 
   useEffect(() => {
+    localStorage.removeItem("lastFilter");
     fetchData();
   }, [page, filters, fetchData]);
 
