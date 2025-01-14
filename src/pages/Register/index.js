@@ -11,6 +11,8 @@ const Register = () => {
   const [cpf, setCpf] = useState("");
   const [email, setEmail] = useState("");
   const [birth_date, setBirthDate] = useState("");
+  const [mother_name, setMotherName] = useState("");
+  const [father_name, setFatherName] = useState("");
   const [main_phone, setMainPhone] = useState("");
   const [reference_contact_name, setReferenceContactName] = useState("");
   const [reference_contact, setReferenceContact] = useState("");
@@ -28,6 +30,7 @@ const Register = () => {
     name: "Nome",
     cpf: "CPF",
     birth_date: "Data de nascimento",
+    mother_name: "Nome da Mãe",
     main_phone: "Telefone principal",
     reference_contact_name: "Nome do contato de referência",
     reference_contact: "Telefone do Contato de Referência",
@@ -102,6 +105,7 @@ const Register = () => {
       !name &&
       !cpf &&
       !birth_date &&
+      !mother_name &&
       !main_phone &&
       !reference_contact_name &&
       !reference_contact &&
@@ -173,6 +177,8 @@ const Register = () => {
           cpf: formattedCpf,
           email,
           birth_date: formattedDate,
+          mother_name,
+          father_name,
           main_phone: formattedMainPhone,
           reference_contact_name,
           reference_contact: formattedReferencePhone,
@@ -292,6 +298,28 @@ const Register = () => {
                 setMainPhone(formattedPhone);
                 setError("");
               }}
+            />
+          </C.RegisterInputGroup>
+
+          <C.RegisterInputGroup>
+            <C.RegisterContentLabel htmlFor="name">
+              Nome da Mãe:
+            </C.RegisterContentLabel>
+            <RegisterInput
+              type="text"
+              value={mother_name}
+              onChange={(e) => [setMotherName(e.target.value), setError("")]}
+            />
+          </C.RegisterInputGroup>
+
+          <C.RegisterInputGroup>
+            <C.RegisterContentLabel htmlFor="name">
+              Nome do Pai:
+            </C.RegisterContentLabel>
+            <RegisterInput
+              type="text"
+              value={father_name}
+              onChange={(e) => [setFatherName(e.target.value), setError("")]}
             />
           </C.RegisterInputGroup>
 

@@ -111,7 +111,7 @@ function Home() {
   };
 
   const fetchData = useCallback(async () => {
-    const token = "lHONlaWxhAX1Am1SL21xoRcGJbmqma8a217VDBIod7914d4d";
+    const token = "2|abpgURxS3NZdbkKvkbC7eM2d4Za8ZulJzadjfrAe9dc9b380";
     let url = `http://127.0.0.1:8000/api/users-addresses-filter?page=${page}`;
 
     const activeFilters = Object.entries(filters).reduce(

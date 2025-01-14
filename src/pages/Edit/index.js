@@ -28,7 +28,7 @@ const EditUser = () => {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
-  const token = "lHONlaWxhAX1Am1SL21xoRcGJbmqma8a217VDBIod7914d4d";
+  const token = "2|abpgURxS3NZdbkKvkbC7eM2d4Za8ZulJzadjfrAe9dc9b380";
 
   const fetchUserData = async () => {
     try {
