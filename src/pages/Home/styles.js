@@ -11,14 +11,6 @@ export const Body = styled.div`
   width: 100%;
   box-shadow: 0 1px 2px #0003;
   padding: 0px 20px;
-
-  @media (max-width: 590px) {
-    padding: 0px;
-  }
-
-  @media (max-width: 390px) {
-    padding: 5px;
-  }
 `;
 
 export const HomeInputGroup = styled.div`
@@ -41,6 +33,10 @@ export const Buttons = styled.div`
   display: flex;
   gap: 16px;
   margin-right: auto;
+
+  @media (max-width: 1000px) {
+    margin-right: initial;
+  }
 `;
 
 export const Button = styled.button`
@@ -51,10 +47,13 @@ export const Button = styled.button`
   border-radius: 4px;
   font-size: 16px;
   cursor: pointer;
-  margin-right: auto;
 
   &:hover {
     background-color: #4e0e58;
+  }
+
+  @media (max-width: 425px) {
+    font-size: 14px;
   }
 `;
 

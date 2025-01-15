@@ -32,7 +32,7 @@ export const Th = styled.th`
   }
 
   @media (max-width: 590px) {
-    font-size: 12px;
+    font-size: 14px;
     padding: 15px;
   }
 
@@ -41,7 +41,7 @@ export const Th = styled.th`
   }
 
   @media (max-width: 475px) {
-    font-size: 10px;
+    font-size: 12px;
   }
 `;
 
@@ -52,7 +52,7 @@ export const Td = styled.td`
 
   @media (max-width: 590px) {
     padding: 8px;
-    font-size: 12px;
+    font-size: 14px;
   }
 
   @media (max-width: 500px) {
@@ -61,8 +61,14 @@ export const Td = styled.td`
 
   @media (max-width: 475px) {
     padding: 0px;
-    font-size: 10px;
+    font-size: 12px;
   }
+`;
+
+export const GroupButton = styled.div`
+  align-items: center;
+  display: flex;
+  flex-direction: column;
 `;
 
 export const Button = styled.button`
@@ -78,10 +84,6 @@ export const Button = styled.button`
 
   @media (max-width: 775px) {
     display: block;
-  }
-
-  @media (max-width: 590px) {
-    font-size: 15px;
   }
 
   @media (max-width: 500px) {

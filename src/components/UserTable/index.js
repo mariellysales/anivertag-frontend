@@ -1,6 +1,6 @@
 import React from "react";
 import { FaEdit, FaTrash, FaPrint } from "react-icons/fa";
-import { TableContainer, Table, Th, Td, Button } from "./style";
+import { TableContainer, Table, Th, Td, Button, GroupButton } from "./style";
 import { useNavigate } from "react-router-dom";
 
 const formatDate = (date) => {
@@ -54,15 +54,17 @@ const UserTable = ({
               <Td>{user.address?.city}</Td>
               <Td>{formatDate(user.birth_date)}</Td>
               <Td>
-                <Button onClick={() => navigate(`/edit/${user.id}`)}>
-                  <FaEdit />
-                </Button>
-                <Button onClick={() => onDelete(user.id)}>
-                  <FaTrash />
-                </Button>
-                <Button onClick={() => onPrint(user.id)}>
-                  <FaPrint />
-                </Button>
+                <GroupButton>
+                  <Button onClick={() => navigate(`/edit/${user.id}`)}>
+                    <FaEdit />
+                  </Button>
+                  <Button onClick={() => onDelete(user.id)}>
+                    <FaTrash />
+                  </Button>
+                  <Button onClick={() => onPrint(user.id)}>
+                    <FaPrint />
+                  </Button>
+                </GroupButton>
               </Td>
             </tr>
           ))}
