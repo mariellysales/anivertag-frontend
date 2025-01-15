@@ -66,9 +66,11 @@ export const Td = styled.td`
 `;
 
 export const GroupButton = styled.div`
-  align-items: center;
-  display: flex;
-  flex-direction: column;
+  @media (max-width: 775px) {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+  }
 `;
 
 export const Button = styled.button`
