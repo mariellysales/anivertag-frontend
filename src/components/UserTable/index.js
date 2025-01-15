@@ -13,7 +13,6 @@ const formatDate = (date) => {
 
 const UserTable = ({
   users,
-  onEdit,
   onDelete,
   onPrint,
   onSelect,
@@ -35,7 +34,6 @@ const UserTable = ({
             </Th>
             <Th>Nome</Th>
             <Th>CPF</Th>
-            <Th>Email</Th>
             <Th>Cidade</Th>
             <Th>Aniversário</Th>
             <Th>Ações</Th>
@@ -53,7 +51,6 @@ const UserTable = ({
               </Td>
               <Td>{user.name}</Td>
               <Td>{user.cpf}</Td>
-              <Td>{user.email}</Td>
               <Td>{user.address?.city}</Td>
               <Td>{formatDate(user.birth_date)}</Td>
               <Td>
