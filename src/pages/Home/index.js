@@ -2,7 +2,7 @@ import React, { useCallback, useState, useEffect } from "react";
 import * as C from "./styles";
 import HomeInput from "../../components/HomeInput";
 import UserTable from "../../components/UserTable";
-import { maskCPF } from "../../utils/utils";
+import { maskCPF, getToken, decryptData } from "../../utils/utils";
 import Header from "../../components/Header";
 import { useNavigate } from "react-router-dom";
 
@@ -35,9 +35,76 @@ function Home() {
     console.log("Edit user:", userId);
   };
 
-  const handleDelete = (userId) => {
-    console.log("Delete user:", userId);
-    setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+  const handleDelete = async (userId) => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/users/${userId}/deactivate/`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(userId);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Erro:", errorData.message);
+        return;
+      }
+
+      const data = await response.json();
+      console.log(data.message);
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+    } catch (error) {
+      console.error("Erro na conexão com a API.");
+    }
+  };
+
+  const handleDeleteSelected = async () => {
+    const selectedUsers = users.filter((user) => user.isSelected);
+
+    if (selectedUsers.length === 0) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("authToken");
+      const decryptedToken = decryptData(token);
+      const userToken = decryptedToken.token;
+
+      for (let user of selectedUsers) {
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/users/${user.id}/deactivate/`,
+          {
+            method: "PATCH",
+            headers: {
+              Authorization: `Bearer ${userToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Erro:", errorData.message);
+          return;
+        }
+
+        const data = await response.json();
+        console.log(data.message);
+
+        setUsers((prevUsers) =>
+          prevUsers.filter(
+            (user) => !selectedUsers.some((selected) => selected.id === user.id)
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Erro ao tentar excluir os usuários:", error);
+    }
   };
 
   const handleSelectAll = (isSelected) => {
@@ -111,7 +178,15 @@ function Home() {
   };
 
   const fetchData = useCallback(async () => {
-    const token = "2|abpgURxS3NZdbkKvkbC7eM2d4Za8ZulJzadjfrAe9dc9b380";
+    let token = localStorage.getItem("authToken");
+    token = decryptData(token);
+    token = token.token;
+    if (!token) {
+      console.error("Token não encontrado. Redirecionando para login...");
+      window.location.href = "/login";
+      return;
+    }
+
     let url = `http://127.0.0.1:8000/api/users-addresses-filter?page=${page}`;
 
     const activeFilters = Object.entries(filters).reduce(
@@ -148,8 +223,12 @@ function Home() {
         const data = await response.json();
 
         if (data.status) {
+          const filteredUsers = data.users.data.filter(
+            (user) => user.is_active === 1
+          );
+
           setUsers(
-            data.users.data.map((user) => ({
+            filteredUsers.map((user) => ({
               ...user,
               isSelected: false,
             }))
@@ -242,8 +321,10 @@ function Home() {
         </C.HomeInputGroup>
 
         <C.Buttons>
-          <C.Button>Imprimir selecionados</C.Button>
-          <C.Button>Deletar selecionados</C.Button>
+          <C.Button>Imprimir Selecionados</C.Button>
+          <C.Button onClick={handleDeleteSelected}>
+            Deletar Selecionados
+          </C.Button>
         </C.Buttons>
 
         <C.Grid>

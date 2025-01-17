@@ -1,21 +1,10 @@
 import { createContext, useEffect, useState } from "react";
-import CryptoJS from "crypto-js";
+import { decryptData, encryptData } from "../utils/utils";
 
 export const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
   const [admin, setAdmin] = useState(null);
-
-  const secretKey = "SuaChaveSecretaGerada";
-
-  const encryptData = (data) => {
-    return CryptoJS.AES.encrypt(JSON.stringify(data), secretKey).toString();
-  };
-
-  const decryptData = (encryptedData) => {
-    const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
-    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-  };
 
   useEffect(() => {
     try {

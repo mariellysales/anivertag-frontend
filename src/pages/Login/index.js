@@ -35,6 +35,7 @@ const Login = () => {
       const data = await response.json();
 
       if (data.status && data.token) {
+        localStorage.setItem("authToken", data.token);
         signin(email, data.token, data.admin);
 
         setTimeout(() => {

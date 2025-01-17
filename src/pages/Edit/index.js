@@ -2,9 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import * as C from "../Register/styles";
 import RegisterInput from "../../components/RegisterInput";
 import LoginButton from "../../components/LoginButton";
-import { maskCPF } from "../../utils/utils";
+import { maskCPF, getToken } from "../../utils/utils";
 import Header from "../../components/Header";
-
 import { useParams } from "react-router-dom";
 
 const EditUser = () => {
@@ -30,8 +29,6 @@ const EditUser = () => {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
-  const token = "2|abpgURxS3NZdbkKvkbC7eM2d4Za8ZulJzadjfrAe9dc9b380";
-
   const fetchUserData = async () => {
     try {
       setLoading(true);
@@ -40,7 +37,7 @@ const EditUser = () => {
         {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${getToken()}`,
             "Content-Type": "application/json",
           },
         }
@@ -218,7 +215,7 @@ const EditUser = () => {
         {
           method: "PUT",
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${getToken()}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
