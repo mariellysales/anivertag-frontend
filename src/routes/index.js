@@ -5,6 +5,7 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import EditUser from "../pages/Edit";
+import Print from "../pages/TicketPrint";
 
 const Private = ({ Item }) => {
   const { signed } = useAuth();
@@ -20,6 +21,7 @@ const RoutesApp = () => {
           <Route path="/register" element={<Register />} />
           <Route exact path="/home" element={<Private Item={Home} />} />
           <Route path="/edit/:id" element={<Private Item={EditUser} />} />
+          <Route path="/print" element={<Private Item={Print} />} />
           <Route path="/signin" element={<Login />} />
           <Route path="*" element={<Login />} />
         </Routes>

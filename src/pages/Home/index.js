@@ -5,7 +5,7 @@ import UserTable from "../../components/UserTable";
 import { maskCPF, getToken, decryptData } from "../../utils/utils";
 import Header from "../../components/Header";
 import { useNavigate } from "react-router-dom";
-import { useReactToPrint } from "react-to-print";
+//import { useReactToPrint } from "react-to-print";
 
 function Home() {
   const [users, setUsers] = useState([]);
@@ -27,7 +27,6 @@ function Home() {
   };
 
   const navigate = useNavigate();
-  const tableRef = useRef();
 
   const handleBackHome = () => {
     navigate("/home");
@@ -37,22 +36,30 @@ function Home() {
     console.log("Edit user:", userId);
   };
 
-  const handlePrint = useReactToPrint({
+  const handlePrint = () => {
+    navigate("/print");
+    /**
     content: () => tableRef.current,
     documentTitle: "Tabela de Usuários",
     onAfterPrint: () => console.log("Impressão concluída!"),
-  });
+     */
+  };
 
   const handleDelete = async (userId) => {
+    const selectedUsers = users.filter((user) => user.isSelected);
+
     try {
+      const ids = selectedUsers.map((user) => user.id);
+
       const response = await fetch(
-        `http://127.0.0.1:8000/api/users/${userId}/deactivate/`,
+        `http://127.0.0.1:8000/api/users/deactivate/`,
         {
           method: "PATCH",
           headers: {
             Authorization: `Bearer ${getToken()}`,
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({ id: ids }),
         }
       );
       console.log(userId);
@@ -65,7 +72,10 @@ function Home() {
 
       const data = await response.json();
       console.log(data.message);
-      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+
+      setUsers((prevUsers) =>
+        prevUsers.filter((user) => !ids.includes(user.id))
+      );
     } catch (error) {
       console.error("Erro na conexão com a API.");
     }
@@ -331,7 +341,7 @@ function Home() {
         </C.HomeInputGroup>
 
         <C.Buttons>
-          <C.Button>Imprimir Selecionados</C.Button>
+          <C.Button onClick={handlePrint}>Imprimir Selecionados</C.Button>
           <C.Button onClick={handleDeleteSelected}>
             Deletar Selecionados
           </C.Button>
@@ -342,11 +352,9 @@ function Home() {
             users={users}
             onEdit={handleEdit}
             onDelete={handleDelete}
-            onPrint={handlePrint}
             onSelect={handleSelect}
             onSelectAll={handleSelectAll}
             selectAll={selectAll}
-            tableRef={tableRef}
           />
         </C.Grid>
         <C.PageButtonGroup>
