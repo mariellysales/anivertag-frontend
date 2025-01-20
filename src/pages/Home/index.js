@@ -1,10 +1,11 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useRef } from "react";
 import * as C from "./styles";
 import HomeInput from "../../components/HomeInput";
 import UserTable from "../../components/UserTable";
 import { maskCPF, getToken, decryptData } from "../../utils/utils";
 import Header from "../../components/Header";
 import { useNavigate } from "react-router-dom";
+import { useReactToPrint } from "react-to-print";
 
 function Home() {
   const [users, setUsers] = useState([]);
@@ -26,6 +27,7 @@ function Home() {
   };
 
   const navigate = useNavigate();
+  const tableRef = useRef();
 
   const handleBackHome = () => {
     navigate("/home");
@@ -34,6 +36,12 @@ function Home() {
   const handleEdit = (userId) => {
     console.log("Edit user:", userId);
   };
+
+  const handlePrint = useReactToPrint({
+    content: () => tableRef.current,
+    documentTitle: "Tabela de Usuários",
+    onAfterPrint: () => console.log("Impressão concluída!"),
+  });
 
   const handleDelete = async (userId) => {
     try {
@@ -102,6 +110,7 @@ function Home() {
           )
         );
       }
+      setSelectAll(false);
     } catch (error) {
       console.error("Erro ao tentar excluir os usuários:", error);
     }
@@ -238,6 +247,7 @@ function Home() {
           setUsers([]);
           console.error("Erro ao buscar dados");
         }
+        setSelectAll(false);
       } catch (error) {
         console.error("Erro ao fazer requisição:", error);
       }
@@ -332,9 +342,11 @@ function Home() {
             users={users}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onPrint={handlePrint}
             onSelect={handleSelect}
             onSelectAll={handleSelectAll}
             selectAll={selectAll}
+            tableRef={tableRef}
           />
         </C.Grid>
         <C.PageButtonGroup>

@@ -18,11 +18,12 @@ const UserTable = ({
   onSelect,
   selectAll,
   onSelectAll,
+  tableRef,
 }) => {
   const navigate = useNavigate();
   return (
     <TableContainer>
-      <Table>
+      <Table ref={tableRef}>
         <thead>
           <tr>
             <Th>
