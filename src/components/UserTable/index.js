@@ -1,5 +1,5 @@
 import React from "react";
-import { FaEdit, FaTrash, FaPrint } from "react-icons/fa";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import { TableContainer, Table, Th, Td, Button, GroupButton } from "./style";
 import { useNavigate } from "react-router-dom";
 
@@ -11,14 +11,7 @@ const formatDate = (date) => {
   return `${day}/${month}`;
 };
 
-const UserTable = ({
-  users,
-  onDelete,
-  onPrint,
-  onSelect,
-  selectAll,
-  onSelectAll,
-}) => {
+const UserTable = ({ users, onDelete, onSelect, selectAll, onSelectAll }) => {
   const navigate = useNavigate();
   return (
     <TableContainer>
@@ -60,9 +53,6 @@ const UserTable = ({
                   </Button>
                   <Button onClick={() => onDelete(user.id)}>
                     <FaTrash />
-                  </Button>
-                  <Button onClick={() => onPrint(user.id)}>
-                    <FaPrint />
                   </Button>
                 </GroupButton>
               </Td>

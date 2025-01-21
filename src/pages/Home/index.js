@@ -37,12 +37,15 @@ function Home() {
   };
 
   const handlePrint = () => {
-    navigate("/print");
-    /**
-    content: () => tableRef.current,
-    documentTitle: "Tabela de Usuários",
-    onAfterPrint: () => console.log("Impressão concluída!"),
-     */
+    const selectedUsers = users.filter((user) => user.isSelected);
+    const ids = selectedUsers.map((user) => user.id);
+
+    if (ids.length === 0) {
+      alert("Nenhum usuário selecionado para impressão.");
+      return;
+    }
+
+    navigate(`/print?ids=${ids.join(",")}`);
   };
 
   const handleDelete = async (userId) => {

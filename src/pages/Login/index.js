@@ -38,10 +38,8 @@ const Login = () => {
         localStorage.setItem("authToken", data.token);
         signin(email, data.token, data.admin);
 
-        setTimeout(() => {
-          setLoading(false);
-          navigate("/home");
-        });
+        setLoading(false);
+        navigate("/home");
       } else {
         setError("E-mail ou senha incorretos");
       }
