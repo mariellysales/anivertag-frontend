@@ -39,8 +39,9 @@ const Login = () => {
         signin(email, data.token, data.admin);
 
         setTimeout(() => {
+          setLoading(false);
           navigate("/home");
-        }, 1000);
+        });
       } else {
         setError("E-mail ou senha incorretos");
       }

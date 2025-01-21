@@ -46,20 +46,15 @@ function Home() {
   };
 
   const handleDelete = async (userId) => {
-    const selectedUsers = users.filter((user) => user.isSelected);
-
     try {
-      const ids = selectedUsers.map((user) => user.id);
-
       const response = await fetch(
-        `http://127.0.0.1:8000/api/users/deactivate/`,
+        `http://127.0.0.1:8000/api/users/${userId}/deactivate/`,
         {
           method: "PATCH",
           headers: {
             Authorization: `Bearer ${getToken()}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ id: ids }),
         }
       );
       console.log(userId);
@@ -72,10 +67,7 @@ function Home() {
 
       const data = await response.json();
       console.log(data.message);
-
-      setUsers((prevUsers) =>
-        prevUsers.filter((user) => !ids.includes(user.id))
-      );
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
     } catch (error) {
       console.error("Erro na conexão com a API.");
     }
