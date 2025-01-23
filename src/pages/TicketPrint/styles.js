@@ -1,12 +1,12 @@
 import styled from "styled-components";
 
 export const Container = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 101.6mm);
-  grid-auto-rows: 25.4mm;
   width: 210mm;
   height: 297mm;
-  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(2, 0fr);
+  gap: 0mm 2mm;
+  padding: 5mm;
   box-sizing: border-box;
 
   @media print {
@@ -16,38 +16,31 @@ export const Container = styled.div`
 
 export const Label = styled.div`
   width: 101.6mm;
-  height: 25.4mm;
-  padding: 4mm;
-  box-sizing: border-box;
+  height: 29.6mm;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-
-  font-family: Arial, sans-serif;
-  font-size: 10pt;
-  line-height: 1.2;
-
-  border: 1px dashed #000;
-
-  @media print {
-    border: none;
-  }
+  justify-content: flex-start;
+  align-items: flex-start;
+  border: 1px solid #000;
+  box-sizing: border-box;
+  text-align: center;
+  padding: 2mm;
 `;
 
 export const UserName = styled.div`
+  font-size: 12pt;
   font-weight: bold;
   text-transform: uppercase;
-  margin-bottom: 1mm;
 `;
 
 export const AddressLine = styled.div`
-  margin: 0;
+  font-size: 10pt;
 `;
 
 export const CityState = styled.div`
-  margin: 0;
+  font-size: 10pt;
 `;
 
 export const PostalCode = styled.div`
-  margin: 0;
+  font-size: 10pt;
 `;
