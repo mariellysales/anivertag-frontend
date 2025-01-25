@@ -20,7 +20,6 @@ function Home() {
   });
 
   const handleLogout = () => {
-    console.log("Usuário deslogado.");
     localStorage.removeItem("authToken");
     window.location.href = "/login";
   };
@@ -59,20 +58,13 @@ function Home() {
           },
         }
       );
-      console.log(userId);
 
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Erro:", errorData.message);
         return;
       }
 
-      const data = await response.json();
-      console.log(data.message);
       setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
-    } catch (error) {
-      console.error("Erro na conexão com a API.");
-    }
+    } catch (error) {}
   };
 
   const handleDeleteSelected = async () => {
@@ -100,13 +92,8 @@ function Home() {
         );
 
         if (!response.ok) {
-          const errorData = await response.json();
-          console.error("Erro:", errorData.message);
           return;
         }
-
-        const data = await response.json();
-        console.log(data.message);
 
         setUsers((prevUsers) =>
           prevUsers.filter(
@@ -115,9 +102,7 @@ function Home() {
         );
       }
       setSelectAll(false);
-    } catch (error) {
-      console.error("Erro ao tentar excluir os usuários:", error);
-    }
+    } catch (error) {}
   };
 
   const handleSelectAll = (isSelected) => {
@@ -195,7 +180,6 @@ function Home() {
     token = decryptData(token);
     token = token.token;
     if (!token) {
-      console.error("Token não encontrado. Redirecionando para login...");
       window.location.href = "/login";
       return;
     }
@@ -249,12 +233,9 @@ function Home() {
           setTotalPages(data.users.last_page || 1);
         } else {
           setUsers([]);
-          console.error("Erro ao buscar dados");
         }
         setSelectAll(false);
-      } catch (error) {
-        console.error("Erro ao fazer requisição:", error);
-      }
+      } catch (error) {}
     }
   }, [filters, page]);
 

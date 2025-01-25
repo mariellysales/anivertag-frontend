@@ -34,7 +34,6 @@ export const getToken = () => {
   }
 
   if (!token) {
-    console.error("Token não encontrado. Redirecionando para login...");
     window.location.href = "/login";
     return;
   }

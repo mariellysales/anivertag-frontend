@@ -12,7 +12,6 @@ const Print = () => {
     const ids = params.get("ids");
 
     if (!ids) {
-      console.error("Nenhum ID fornecido.");
       return;
     }
 
@@ -30,16 +29,12 @@ const Print = () => {
         );
 
         if (!response.ok) {
-          const errorData = await response.json();
-          console.error("Erro:", errorData.message);
           return;
         }
 
         const data = await response.json();
         setUsers(data.users);
-      } catch (error) {
-        console.error("Erro ao buscar usuários:", error.message);
-      }
+      } catch (error) {}
     };
 
     fetchUsers();
