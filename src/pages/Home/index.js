@@ -39,7 +39,6 @@ function Home() {
     const ids = selectedUsers.map((user) => user.id);
 
     if (ids.length === 0) {
-      alert("Nenhum usuário selecionado para impressão.");
       return;
     }
 

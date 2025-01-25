@@ -53,7 +53,7 @@ const Print = () => {
   return (
     <>
       {usersChunks.map((chunk, index) => (
-        <C.Container>
+        <C.Container key={`container-${index}`}>
           {chunk.map((user, userIndex) => (
             <C.Label key={user.id}>
               <C.UserName>{user.name.toUpperCase()}</C.UserName>
