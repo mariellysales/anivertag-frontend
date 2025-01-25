@@ -45,25 +45,46 @@ const Print = () => {
     fetchUsers();
   }, [location.search]);
 
+  const chunkUsers = (users, size) => {
+    const result = [];
+    for (let i = 0; i < users.length; i += size) {
+      result.push(users.slice(i, i + size));
+    }
+    return result;
+  };
+
+  const usersChunks = chunkUsers(users, 20);
+
   return (
-    <C.Container>
-      {users.map((user) => (
-        <C.Label key={user.id}>
-          <C.UserName>{user.name.toUpperCase()}</C.UserName>
-          <C.AddressLine>
-            {user.address.street}, {user.address.number}
-            {user.address.additional_information
-              ? ` - ${user.address.additional_information}`
-              : ""}
-          </C.AddressLine>
-          <C.AddressLine>{user.address.neighborhood}</C.AddressLine>
-          <C.CityState>
-            {user.address.city}/{user.address.state}
-          </C.CityState>
-          <C.PostalCode>{user.address.postal_code}</C.PostalCode>
-        </C.Label>
+    <>
+      {usersChunks.map((chunk, index) => (
+        <C.Container>
+          {chunk.map((user, userIndex) => (
+            <C.Label key={user.id}>
+              <C.UserName>{user.name.toUpperCase()}</C.UserName>
+              <C.AddressLine>
+                {user.address.street}, {user.address.number}
+                {user.address.additional_information
+                  ? ` - ${user.address.additional_information}`
+                  : ""}
+              </C.AddressLine>
+              <C.AddressLine>{user.address.neighborhood}</C.AddressLine>
+              <C.CityState>
+                {user.address.city}/{user.address.state}
+              </C.CityState>
+              <C.PostalCode>{user.address.postal_code}</C.PostalCode>
+            </C.Label>
+          ))}
+          {chunk.length < 20 &&
+            Array.from({ length: 20 - chunk.length }).map((_, emptyIndex) => (
+              <C.Label
+                key={`empty-${emptyIndex}`}
+                style={{ visibility: "hidden" }}
+              />
+            ))}
+        </C.Container>
       ))}
-    </C.Container>
+    </>
   );
 };
 
