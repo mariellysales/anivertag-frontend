@@ -1,11 +1,10 @@
-import React, { useCallback, useState, useEffect, useRef } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import * as C from "./styles";
 import HomeInput from "../../components/HomeInput";
 import UserTable from "../../components/UserTable";
 import { maskCPF, getToken, decryptData } from "../../utils/utils";
 import Header from "../../components/Header";
 import { useNavigate } from "react-router-dom";
-//import { useReactToPrint } from "react-to-print";
 
 function Home() {
   const [users, setUsers] = useState([]);
