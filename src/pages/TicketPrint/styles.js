@@ -2,11 +2,9 @@ import styled from "styled-components";
 
 export const Container = styled.div`
   width: 210mm;
-  height: 297mm;
   display: grid;
   grid-template-columns: repeat(2, 0fr);
   gap: 0mm 13mm;
-  padding: 5mm 0mm;
   box-sizing: border-box;
 
   @media print {
@@ -17,7 +15,7 @@ export const Container = styled.div`
 
 export const Label = styled.div`
   width: 101.6mm;
-  height: 30.6mm;
+  height: 29.4mm;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
