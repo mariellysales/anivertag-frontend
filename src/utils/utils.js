@@ -38,3 +38,11 @@ export const getToken = () => {
     return;
   }
 };
+
+export const formatDate = (date) => {
+  if (!date) return "";
+  const newDate = new Date(date);
+  const day = String(newDate.getDate() + 1).padStart(2, "0");
+  const month = String(newDate.getMonth() + 1).padStart(2, "0");
+  return `${day}/${month}`;
+};

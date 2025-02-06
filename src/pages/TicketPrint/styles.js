@@ -30,11 +30,23 @@ export const Label = styled.div`
   }
 `;
 
+export const UserInfo = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+`;
+
 export const UserName = styled.div`
   font-size: 9pt;
   font-weight: bold;
   text-align: left;
   text-transform: uppercase;
+`;
+
+export const Birthday = styled.div`
+  font-size: 9pt;
+  text-align: right;
 `;
 
 export const AddressLine = styled.div`

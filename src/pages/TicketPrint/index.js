@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { getToken } from "../../utils/utils";
+import { getToken, formatDate } from "../../utils/utils";
 import * as C from "./styles";
 
 const Print = () => {
@@ -56,7 +56,10 @@ const Print = () => {
         <C.Container key={`container-${index}`}>
           {chunk.map((user, userIndex) => (
             <C.Label key={user.id}>
-              <C.UserName>{user.name.toUpperCase()}</C.UserName>
+              <C.UserInfo>
+                <C.UserName>{user.name.toUpperCase()}</C.UserName>
+                <C.Birthday>{formatDate(user.birth_date)}</C.Birthday>
+              </C.UserInfo>
               <C.AddressLine>
                 {user.address.street}, {user.address.number}
                 {user.address.additional_information

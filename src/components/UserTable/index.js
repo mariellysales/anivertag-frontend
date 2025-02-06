@@ -2,14 +2,7 @@ import React from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { TableContainer, Table, Th, Td, Button, GroupButton } from "./style";
 import { useNavigate } from "react-router-dom";
-
-const formatDate = (date) => {
-  if (!date) return "";
-  const newDate = new Date(date);
-  const day = String(newDate.getDate() + 1).padStart(2, "0");
-  const month = String(newDate.getMonth() + 1).padStart(2, "0");
-  return `${day}/${month}`;
-};
+import { formatDate } from "../../utils/utils";
 
 const UserTable = ({ users, onDelete, onSelect, selectAll, onSelectAll }) => {
   const navigate = useNavigate();
