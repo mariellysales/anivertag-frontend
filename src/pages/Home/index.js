@@ -1,13 +1,15 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useRef } from "react";
 import * as C from "./styles";
 import HomeInput from "../../components/HomeInput";
 import UserTable from "../../components/UserTable";
-import { maskCPF, getToken, decryptData } from "../../utils/utils";
+import { maskCPF, getToken, decryptData, formatDate } from "../../utils/utils";
 import Header from "../../components/Header";
 import { useNavigate } from "react-router-dom";
+import { useReactToPrint } from "react-to-print";
 
 function Home() {
   const [users, setUsers] = useState([]);
+  const [usersToPrint, setUsersToPrint] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectAll, setSelectAll] = useState(false);
@@ -18,6 +20,8 @@ function Home() {
     start_date: "",
     end_date: "",
   });
+  const [isPrinting, setIsPrinting] = useState(false);
+  const printRef = useRef(null);
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -34,16 +38,77 @@ function Home() {
     console.log("Edit user:", userId);
   };
 
-  const handlePrint = () => {
+  const handlePrint = async () => {
+    setIsPrinting(true);
     const selectedUsers = users.filter((user) => user.isSelected);
     const ids = selectedUsers.map((user) => user.id);
-
+  
     if (ids.length === 0) {
       return;
     }
 
-    navigate(`/print?ids=${ids.join(",")}`);
+    /** Print tickets with redirect */
+    // navigate(`/print?ids=${ids.join(",")}`);
+  
+    /** Print tickets without redirect */
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/users-ticket/${ids}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      if (!response.ok) {
+        setIsPrinting(false);
+        return;
+      }
+  
+      const data = await response.json();
+      
+      setUsersToPrint(data.users);    
+    } catch (error) {
+      console.error("Erro ao buscar usuários para impressão:", error);
+      setIsPrinting(false);
+    }
   };
+
+  const print = useReactToPrint({
+    contentRef: printRef,
+    documentTitle: "Impressao",
+    onAfterPrint: () => {
+      console.log("Impressão/PDF concluído!");
+      setUsersToPrint([]);
+    },
+  });
+
+  useEffect(() => {
+    if (usersToPrint.length > 0) {
+      print();
+      setUsersToPrint([]);
+      setIsPrinting(false);
+    }
+  }, [print, usersToPrint]);
+
+
+
+  const chunkUsers = (usersToPrint, size) => {
+    const result = [];
+    for (let i = 0; i < usersToPrint.length; i += size) {
+      result.push(usersToPrint.slice(i, i + size));
+    }
+    return result;
+  };
+
+  const getPageMargins = () => {
+    return `@page { margin: 10mm 10mm 10mm 10mm !important; }`;
+  };
+
+  const usersChunks = chunkUsers(usersToPrint, 20);
 
   const handleDelete = async (userId) => {
     try {
@@ -315,7 +380,10 @@ function Home() {
         </C.HomeInputGroup>
 
         <C.Buttons>
-          <C.Button onClick={handlePrint}>Imprimir Selecionados</C.Button>
+          <C.Button 
+          onClick={handlePrint}  
+          disabled={isPrinting}
+          >{isPrinting ? 'Imprimindo...' : 'Imprimir Selecionados'}</C.Button>
           <C.Button onClick={handleDeleteSelected}>
             Deletar Selecionados
           </C.Button>
@@ -355,6 +423,39 @@ function Home() {
           </C.PageButton>
         </C.PageButtonGroup>
       </C.Body>
+      <div ref={printRef}>
+      <style>{getPageMargins()}</style>
+        {usersChunks.map((chunk, index) => (
+                <C.PrintContainer key={`container-${index}`}>
+                  {chunk.map((user, userIndex) => (
+                    <C.PrintLabel key={user.id}>
+                      <C.PrintUserInfo>
+                        <C.PrintUserName>{user.name.toUpperCase()}</C.PrintUserName>
+                        <C.PrintBirthday>{formatDate(user.birth_date)}</C.PrintBirthday>
+                      </C.PrintUserInfo>
+                      <C.PrintAddressLine>
+                        {user.address.street}, {user.address.number}
+                        {user.address.additional_information
+                          ? ` - ${user.address.additional_information}`
+                          : ""}
+                      </C.PrintAddressLine>
+                      <C.PrintAddressLine>{user.address.neighborhood}</C.PrintAddressLine>
+                      <C.PrintCityState>
+                        {user.address.city}/{user.address.state}
+                      </C.PrintCityState>
+                      <C.PrintPostalCode>{user.address.postal_code}</C.PrintPostalCode>
+                    </C.PrintLabel>
+                  ))}
+                  {chunk.length < 20 &&
+                    Array.from({ length: 20 - chunk.length }).map((_, emptyIndex) => (
+                      <C.PrintLabel
+                        key={`empty-${emptyIndex}`}
+                        style={{ visibility: "hidden" }}
+                      />
+                    ))}
+                </C.PrintContainer>
+              ))}
+      </div>
     </C.Content>
   );
 }
