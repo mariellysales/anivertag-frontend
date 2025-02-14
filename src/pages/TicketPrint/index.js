@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { getToken, formatDate } from "../../utils/utils";
+import { useNavigate } from "react-router-dom";
 import * as C from "./styles";
 
 const Print = () => {
   const location = useLocation();
   const [users, setUsers] = useState([]);
+    const navigate = useNavigate();
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -39,6 +41,18 @@ const Print = () => {
 
     fetchUsers();
   }, [location.search]);
+
+  useEffect(() => {
+    if (users.length > 0) {
+      setTimeout(() => {
+        window.print();
+      }, 100); // Small delay to ensure rendering before print
+
+      window.onafterprint = () => {
+        navigate('/home'); // Redirects to home after print
+      };
+    }
+  }, [users]);
 
   const chunkUsers = (users, size) => {
     const result = [];
