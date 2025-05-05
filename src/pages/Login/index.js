@@ -14,6 +14,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -24,7 +25,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/login", {
+      const response = await fetch(`${apiUrl}login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -20,9 +20,6 @@ const Header = ({ onLogout }) => {
 
   return (
     <C.Header>
-      <C.Logo>
-        <C.Img src="/../images/logo.png" alt="Logo" />
-      </C.Logo>
       {isHomePage && (
         <C.LogoutButton onClick={handleLogout}>Sair</C.LogoutButton>
       )}

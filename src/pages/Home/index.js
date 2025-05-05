@@ -18,6 +18,7 @@ function Home() {
     start_date: "",
     end_date: "",
   });
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -48,7 +49,7 @@ function Home() {
   const handleDelete = async (userId) => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/users/${userId}/deactivate/`,
+        `${apiUrl}users/${userId}/deactivate/`,
         {
           method: "PATCH",
           headers: {
@@ -80,7 +81,7 @@ function Home() {
 
       for (let user of selectedUsers) {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/users/${user.id}/deactivate/`,
+          `${apiUrl}users/${user.id}/deactivate/`,
           {
             method: "PATCH",
             headers: {
@@ -183,7 +184,7 @@ function Home() {
       return;
     }
 
-    let url = `http://127.0.0.1:8000/api/users-addresses-filter?page=${page}`;
+    let url = `${apiUrl}users-addresses-filter?page=${page}`;
 
     const activeFilters = Object.entries(filters).reduce(
       (acc, [key, value]) => {
@@ -236,7 +237,7 @@ function Home() {
         setSelectAll(false);
       } catch (error) {}
     }
-  }, [filters, page]);
+  }, [filters, page, apiUrl]);
 
   useEffect(() => {
     localStorage.removeItem("lastFilter");

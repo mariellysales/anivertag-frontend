@@ -6,6 +6,7 @@ import * as C from "./styles";
 const Print = () => {
   const location = useLocation();
   const [users, setUsers] = useState([]);
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -18,7 +19,7 @@ const Print = () => {
     const fetchUsers = async () => {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/users-ticket/${ids}`,
+          `${apiUrl}users-ticket/${ids}`,
           {
             method: "GET",
             headers: {

@@ -25,6 +25,7 @@ const Register = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const REQUIRED_FIELDS = {
     name: "Nome",
@@ -169,7 +170,7 @@ const Register = () => {
       const formattedPostalCode = maskPostalCode(postal_code);
       const formattedCpf = maskCPF(cpf);
 
-      const response = await fetch("http://127.0.0.1:8000/api/full-register", {
+      const response = await fetch(`${apiUrl}full-register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
