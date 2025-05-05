@@ -52,6 +52,12 @@ export const Button = styled.button`
     background-color: #4e0e58;
   }
 
+  &:disabled {
+    background-color: #9b4d99;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
   @media (max-width: 425px) {
     font-size: 14px;
   }
@@ -89,4 +95,66 @@ export const PageButton = styled.button`
   &:hover {
     color: rgb(103, 27, 125);
   }
+`;
+
+/** Styles for print tickets */
+export const PrintContainer = styled.div`
+  width: 210mm;
+  display: grid;
+  grid-template-columns: repeat(2, 0fr);
+  gap: 0mm 13mm;
+  box-sizing: border-box;
+
+  @media print {
+    page-break-inside: avoid;
+    margin: 0;
+  }
+`;
+
+export const PrintLabel = styled.div`
+  width: 101.6mm;
+  height: 29.4mm;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
+  border: 1px solid #000;
+  box-sizing: border-box;
+  text-align: center;
+  padding: 5mm;
+
+  @media print {
+    page-break-inside: avoid;
+  }
+`;
+
+export const PrintUserInfo = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+`;
+
+export const PrintUserName = styled.div`
+  font-size: 9pt;
+  font-weight: bold;
+  text-align: left;
+  text-transform: uppercase;
+`;
+
+export const PrintBirthday = styled.div`
+  font-size: 9pt;
+  text-align: right;
+`;
+
+export const PrintAddressLine = styled.div`
+  font-size: 8pt;
+`;
+
+export const PrintCityState = styled.div`
+  font-size: 8pt;
+`;
+
+export const PrintPostalCode = styled.div`
+  font-size: 8pt;
 `;
