@@ -28,12 +28,14 @@ const EditUser = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+    const apiUrl = process.env.REACT_APP_API_URL;
+
 
   const fetchUserData = async () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `http://127.0.0.1:8000/api/users-address/${id}`,
+        `${apiUrl}users-address/${id}`,
         {
           method: "GET",
           headers: {
@@ -211,7 +213,7 @@ const EditUser = () => {
       const formattedCpf = maskCPF(cpf);
 
       const response = await fetch(
-        "http://127.0.0.1:8000/api/users-address/" + id,
+        `${apiUrl}users-address/${id}`,
         {
           method: "PUT",
           headers: {
