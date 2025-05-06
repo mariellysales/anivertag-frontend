@@ -24,6 +24,8 @@ function Home() {
   const [isPrinting, setIsPrinting] = useState(false);
   const printRef = useRef(null);
 
+  const hasSelectedUsers = users.some((user) => user.isSelected);
+
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     window.location.href = "/login";
@@ -381,10 +383,13 @@ function Home() {
         </C.HomeInputGroup>
 
         <C.Buttons>
-          <C.Button 
-          onClick={handlePrint}  
-          disabled={isPrinting}
-          >{isPrinting ? 'Imprimindo...' : 'Imprimir Selecionados'}</C.Button>
+          <C.Button
+            onClick={handlePrint}
+            disabled={isPrinting || !hasSelectedUsers}
+          >
+            {isPrinting ? "Imprimindo..." : "Imprimir selecionados"}
+          </C.Button>
+
           <C.Button onClick={handleDeleteSelected}>
             Deletar Selecionados
           </C.Button>
